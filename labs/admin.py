@@ -1,5 +1,5 @@
 from django.contrib import admin
-from psdb-code.labs.models import LabAccount
+from labs.models import LabAccount
 
 class LabAccountAdmin(admin.ModelAdmin):
 	pass

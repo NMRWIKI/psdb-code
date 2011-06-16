@@ -1,7 +1,11 @@
 # Create your views here.
 from django.http import HttpResponse
 from labs import forms
+from jinja2 import Environment, PackageLoader
+from django.views.decorators.csrf import csrf_exempt
+env = Environment(loader=PackageLoader('labs', 'templates/labs'))
 
+@csrf_exempt
 def create_lab(request):
     extra = ''
     if request.method == 'POST':
@@ -12,14 +16,6 @@ def create_lab(request):
     else:
         form = forms.LabAccountForm()
 
-    response = """
-    <form method="post">
-    <table>%(the_form)s</table>
-    <input type="submit" value="save" />
-    </form><p>%(extra)s</p>
-    """ % {
-        'the_form': form.as_table(),
-        'extra': extra
-    }
-
-    return HttpResponse(response)
+    data = {'the_form': form, 'message': extra }
+    template = env.get_template('create_lab.html')
+    return HttpResponse(template.render(**data))
