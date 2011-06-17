@@ -1,6 +1,10 @@
 from django.contrib import admin
-from labs.models import LabAccount
+from labs import models
 
-class LabAccountAdmin(admin.ModelAdmin):
+class OrganizationAdmin(admin.ModelAdmin):
 	pass
-admin.site.register(LabAccount, LabAccountAdmin)
+admin.site.register(models.Organization, OrganizationAdmin)
+
+class AppointmentAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(models.Appointment, AppointmentAdmin)
