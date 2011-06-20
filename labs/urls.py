@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'psdb.views.home', name='home'),
     url(r'^create', 'labs.views.create_lab', name='create_lab'),
+    url(r'^all', 'labs.views.all', name='all'),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

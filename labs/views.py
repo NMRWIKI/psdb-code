@@ -19,3 +19,8 @@ def create_lab(request):
     data = {'the_form': form, 'message': extra }
     template = ENV.get_template('create_lab.html')
     return HttpResponse(template.render(**data))
+
+@csrf_exempt
+def all(request):
+    if request.method == 'GET':
+        
