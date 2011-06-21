@@ -126,7 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 	'south',
     'psdb',
-    'labs',
+    'organizations',
 )
 
 # A sample logging configuration. The only tangible logging
