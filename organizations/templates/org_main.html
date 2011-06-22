@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+
+<ul>
+{% for org_type in org_type_info %}
+<li><a href="{{ org_type.url }}">{{ org_type.org_type_name|title }}</a> x {{ org_type.count }}</li>
+{% endfor %}
+</ul>
+{% endblock %}
+

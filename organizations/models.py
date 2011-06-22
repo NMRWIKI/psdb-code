@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
+from django.core.urlresolvers import reverse
 
 ACADEMIC = 0
 INDUSTRIAL = 1
@@ -11,12 +13,12 @@ ORG_TYPE_CHOICES = (
     (NON_PROFIT, 'non profit'),
     (GOVERNMENT, 'government'),
 )
-ORG_TYPE_URL2ID = {
-    'companies': INDUSTRIAL,
-    'academic-labs': ACADEMIC,
-    'non-profits': NON_PROFIT,
-    'government': GOVERNMENT,
-}
+ORG_TYPE_URL2ID = (
+    ('academic-labs', ACADEMIC),
+    ('companies', INDUSTRIAL),
+    ('non-profit-organizations', NON_PROFIT),
+    ('government-organizations', GOVERNMENT),
+)
 
 PROFESSOR = 0
 UNDERGRAD = 1
@@ -55,7 +57,13 @@ class Organization(models.Model):
         super(Organization, self).save()
 
     def get_absolute_url(self):
-        return ''
+        return reverse(
+            'org_page',
+            kwargs = {'id': self.id, 'slug': slugify(self.name)}
+            )
+
+    def __unicode__(self):
+        return self.name
 
 
 class Appointment(models.Model):
