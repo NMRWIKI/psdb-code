@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>My Organizations</h2>
 {% if my_orgs %}
+<h2>My Organizations</h2>
     <ul>
     {% for org in my_orgs %}
         <li><a href="{{ org.get_absolute_url() }}">{{ org.name }}</a></li>
@@ -9,8 +9,8 @@
     </ul>
 {% endif %}
 
-<h2>All Organizations</h2>
 {% if all_orgs %}
+<h2>All Organizations</h2>
     <ul>
     {% for org in all_orgs %}
         <li><a href="{{ org.get_absolute_url() }}">{{ org.name }}</a></li>

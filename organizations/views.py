@@ -4,6 +4,7 @@ from organizations import forms, models
 from jinja2 import Environment, PackageLoader
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 ENV = Environment(loader=PackageLoader('organizations', 'templates'))
 
 def org_main(request):
@@ -52,7 +53,7 @@ def org_list(request, org_type=None):
         all_orgs = orgs.exclude(appointments__user = request.user)
     else:
         all_orgs = orgs
-    template = ENV.get_template('all_labs.html')
+    template = ENV.get_template('org_list.html')
     data = {
         'my_orgs': my_orgs,
         'all_orgs': all_orgs,
@@ -60,10 +61,15 @@ def org_list(request, org_type=None):
     }
     return HttpResponse(template.render(**data))
 
-def org_page(request):
+def org_page(request, id=None, slug=None):
+    requested_org = get_object_or_404(id = id)
+   # try:
+   #     org = models.Organization.objects.get(id = id)
+   # except models.Organizations.DoesNotExist:
+   #     raise Http404
     #requested_org_page = models.Organization.objects.filter(org_id = 
     data = {
-        'title': PLACEHOLDER,
+        'title': requested_org.title,
     }
     template = ENV.get_template('org_page.html')
     return HttpResponse(template.render(**data))

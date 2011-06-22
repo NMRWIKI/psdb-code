@@ -79,4 +79,11 @@ class Appointment(models.Model):
     def _get_status(self):
         return self.to_date == None
 
+    def __unicode__(self):
+        return '%s (%s, %s)' % (
+            self.user.username,
+            self.get_title_display(),
+            self.organization.name,
+        )
+
     is_active = property(_get_status)
