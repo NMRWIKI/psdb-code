@@ -1,16 +1,41 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>{{ org page name }}</h1>
-
-<h2>Founder</h2>
+<a href="{{ org_url }}">{{ org_url }}</a>
 
 <h2>Description</h2>
 
+{{ description }}
+
 <h2>Members</h2>
 
-<h3>Current</h3>
+Founder: {{ pi }} 
 
-<h3>Former</h3>
+{% if current_members %}
+    <h3>Current</h3>
+    <ul>
+        {% for member in current_members %}
+        <li><a href="blankmemberpage">{{ member.username }}</a>
+        {% if member == pi %}
+         - <b> Founder</b>
+        {% endif %}
+        </li>
+        {% endfor %}
+   </ul>
+{% endif %}
+
+{% if former_members %}
+    <h3>Former</h3>
+    <ul>
+        {% for member in former_members %}
+        <li><a href="blankmemberpage">{{ member.username }}</a>
+        - left {{ member.date_left }}
+        {% if member == pi %}
+        - <b> Founder</b>
+        {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
 {% endblock %}

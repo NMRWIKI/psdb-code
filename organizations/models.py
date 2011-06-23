@@ -46,7 +46,7 @@ TITLE_CHOICES = (
 # Create your models here.
 class Organization(models.Model):
     pi = models.ForeignKey(User, related_name = 'managed_organizations')
-    name = models.CharField(max_length = 200, help_text='help')
+    name = models.CharField(max_length = 200, blank=True, help_text='help')
     description = models.TextField()
     url = models.URLField()
     org_type = models.SmallIntegerField(choices=ORG_TYPE_CHOICES)
@@ -67,14 +67,14 @@ class Organization(models.Model):
 
 
 class Appointment(models.Model):
-    user = models.ForeignKey(User, related_name = 'organizations')
+    user = models.ForeignKey(User, related_name = 'appointments')
     organization = models.ForeignKey(
                                 Organization,
                                 related_name = 'appointments'
                             )
     title = models.SmallIntegerField(choices=TITLE_CHOICES)
     from_date = models.DateField()
-    to_date = models.DateField(null=True)
+    to_date = models.DateField(null=True, blank=True)
 
     def _get_status(self):
         return self.to_date == None

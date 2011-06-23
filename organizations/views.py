@@ -1,10 +1,13 @@
 # Create your views here.
+from datetime import datetime
+from django.db.models import Q
 from django.http import HttpResponse
-from organizations import forms, models
-from jinja2 import Environment, PackageLoader
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from jinja2 import Environment, PackageLoader
+from organizations import forms, models
 ENV = Environment(loader=PackageLoader('organizations', 'templates'))
 
 def org_main(request):
@@ -62,14 +65,35 @@ def org_list(request, org_type=None):
     return HttpResponse(template.render(**data))
 
 def org_page(request, id=None, slug=None):
-    requested_org = get_object_or_404(id = id)
-   # try:
-   #     org = models.Organization.objects.get(id = id)
-   # except models.Organizations.DoesNotExist:
-   #     raise Http404
-    #requested_org_page = models.Organization.objects.filter(org_id = 
+    org = get_object_or_404(models.Organization, id = id)
+    now = datetime.now()
+    org_members = User.objects.filter(
+        appointments__organization = org
+    )
+    current_members = org_members.filter(
+        Q(appointments__to_date = None)|
+        Q(appointments__to_date__gt = now)
+    )
+    select_tpl = 'SELECT %(appt)s.to_date ' + \
+        'WHERE %(user)s.id = %(appt)s.user_id '
+    former_members = org_members.exclude(
+        Q(appointments__to_date = None)
+        | Q(appointments__to_date__gt = now)
+    ).extra(
+        select = {
+            'date_left': select_tpl % {
+                'appt': models.Appointment._meta.db_table,
+                'user': User._meta.db_table,
+            }
+        },
+    ).distinct()
     data = {
-        'title': requested_org.title,
+        'title': org.name,
+        'org_url': org.url,
+        'pi': org.pi,
+        'description': org.description,
+        'current_members': current_members,
+        'former_members': former_members,
     }
     template = ENV.get_template('org_page.html')
     return HttpResponse(template.render(**data))

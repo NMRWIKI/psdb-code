@@ -10,7 +10,9 @@
 {% endif %}
 
 {% if all_orgs %}
-<h2>All Organizations</h2>
+    {% if my_orgs %}
+        <h2>All Organizations</h2>
+    {% endif %}
     <ul>
     {% for org in all_orgs %}
         <li><a href="{{ org.get_absolute_url() }}">{{ org.name }}</a></li>
