@@ -1,7 +1,7 @@
 # Create your views here.
 from datetime import datetime
 from django.db.models import Q
-from django.http import HttpResponse
+from django import http
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -25,7 +25,7 @@ def org_main(request):
         }
         org_type_info.append(info)
     template = ENV.get_template('org_main.html')
-    return HttpResponse(
+    return http.HttpResponse(
             template.render(
                 org_type_info = org_type_info,
                 title = 'Organizations',
@@ -36,6 +36,7 @@ def org_main(request):
 
 @csrf_exempt
 def create_lab(request):
+   # org_type = request.GET.get('org_type')
     extra = ''
     title = 'Organization Creation'
     if request.method == 'POST':
@@ -46,9 +47,31 @@ def create_lab(request):
     else:
         form = forms.LabAccountForm()
 
-    data = {'the_form': form, 'message': extra, 'title': title }
+    data = {'the_form': form, 'message': extra, 'title': title}
     template = ENV.get_template('create_lab.html')
-    return HttpResponse(template.render(**data))
+    return http.HttpResponse(template.render(**data))
+
+@csrf_exempt
+def create_appointment(request):
+    user = request.user
+    org_id = request.GET.get('org', '')
+    organization = models.Organization.objects.get(id = org_id)
+    title = 'Appointment Creation for %s' % organization.name
+    if request.method == 'POST':
+        appointment = models.Appointment(user=user, organization=organization)
+        form = forms.AppointmentForm(request.POST, instance=appointment)
+        if form.is_valid():
+            form.save()
+            return http.HttpResponseRedirect(organization.get_absolute_url())
+    else:
+        form = forms.AppointmentForm()
+
+    data = {
+            'the_form': form, 
+            'title': title, 
+            }
+    template = ENV.get_template('create_appointment.html')
+    return http.HttpResponse(template.render(**data))
 
 def org_list(request, org_type=None):
     org_type_id = dict(models.ORG_TYPE_URL2ID)[org_type]
@@ -66,38 +89,27 @@ def org_list(request, org_type=None):
         'title_link': reverse('create_lab'),
         'title_link_text': '(add)'
     }
-    return HttpResponse(template.render(**data))
+    return http.HttpResponse(template.render(**data))
 
 def org_page(request, id=None, slug=None):
+    add_link = reverse('create_appointment')
     org = get_object_or_404(models.Organization, id = id)
     now = datetime.now()
-    org_members = User.objects.filter(
-        appointments__organization = org
-    )
+    org_members = models.Appointment.objects.filter(organization = org)
     current_members = org_members.filter(
-        Q(appointments__to_date = None)|
-        Q(appointments__to_date__gt = now)
+        Q(to_date = None)|
+        Q(to_date__gt = now)
     )
-    select_tpl = 'SELECT %(appt)s.to_date ' + \
-        'WHERE %(user)s.id = %(appt)s.user_id '
     former_members = org_members.exclude(
-        Q(appointments__to_date = None)
-        | Q(appointments__to_date__gt = now)
-    ).extra(
-        select = {
-            'date_left': select_tpl % {
-                'appt': models.Appointment._meta.db_table,
-                'user': User._meta.db_table,
-            }
-        },
-    ).distinct()
+        Q(to_date = None)
+        | Q(to_date__gt = now)
+    )
     data = {
         'title': org.name,
-        'org_url': org.url,
-        'pi': org.pi,
-        'description': org.description,
-        'current_members': current_members,
-        'former_members': former_members,
+        'organization': org,
+        'current_appointments': current_members,
+        'former_appointments': former_members,
+        'add_link': add_link,
     }
     template = ENV.get_template('org_page.html')
-    return HttpResponse(template.render(**data))
+    return http.HttpResponse(template.render(**data))

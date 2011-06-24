@@ -20,7 +20,17 @@ urlpatterns = patterns('',
         'organizations.views.org_page',
         name='org_page'
     ),
-    url(r'^create', 'organizations.views.create_lab', name='create_lab'),
+    url(
+       # r'^create_lab/\?org_type=(?P<org_type>[a-z0-9\-]+)/$', 
+        r'^create_lab/',
+        'organizations.views.create_lab', 
+        name='create_lab'
+    ),
+    url(
+        r'^create_appointment', 
+        'organizations.views.create_appointment',
+        name='create_appointment'
+    ),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

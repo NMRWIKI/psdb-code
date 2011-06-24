@@ -73,8 +73,8 @@ class Appointment(models.Model):
                                 related_name = 'appointments'
                             )
     title = models.SmallIntegerField(choices=TITLE_CHOICES)
-    from_date = models.DateField()
-    to_date = models.DateField(null=True, blank=True)
+    from_date = models.DateField(help_text = 'Enter dates as YYYY-MM-DD')
+    to_date = models.DateField(null=True, blank=True, help_text = 'Leave blank if you are currently a member')
 
     def _get_status(self):
         return self.to_date == None

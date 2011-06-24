@@ -1,22 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
 
-<a href="{{ org_url }}">{{ org_url }}</a>
+<a href="{{ organization.url }}">Site for {{ title }}</a>
 
 <h2>Description</h2>
 
-{{ description }}
+{{ organization.description }}
 
 <h2>Members</h2>
 
-Founder: {{ pi }} 
+Founder: {{ organization.pi }} </br> 
+<a href="{{ add_link }}/?org={{organization.id}}">This is (was) my lab</a>
 
-{% if current_members %}
+{% if current_appointments %}
     <h3>Current</h3>
     <ul>
-        {% for member in current_members %}
-        <li><a href="blankmemberpage">{{ member.username }}</a>
-        {% if member == pi %}
+        {% for appointment in current_appointments %}
+        <li><a href="blankappointmentpage">{{ appointment.user }}</a>
+        {% if appointment.user == organization.pi %}
          - <b> Founder</b>
         {% endif %}
         </li>
@@ -24,13 +25,13 @@ Founder: {{ pi }}
    </ul>
 {% endif %}
 
-{% if former_members %}
+{% if former_appointments %}
     <h3>Former</h3>
     <ul>
-        {% for member in former_members %}
-        <li><a href="blankmemberpage">{{ member.username }}</a>
-        - left {{ member.date_left }}
-        {% if member == pi %}
+        {% for appointment in former_appointments %}
+        <li><a href="blankappointmentpage">{{ appointment.user }}</a>
+        - left {{ appointment.to_date }}
+        {% if appointment.user == organization.pi %}
         - <b> Founder</b>
         {% endif %}
         </li>
