@@ -28,7 +28,9 @@ def org_main(request):
     return HttpResponse(
             template.render(
                 org_type_info = org_type_info,
-                title = 'Organizations'
+                title = 'Organizations',
+                title_link = reverse('create_lab'),
+                title_link_text = '(add)'
             )
         )
 
@@ -61,6 +63,8 @@ def org_list(request, org_type=None):
         'my_orgs': my_orgs,
         'all_orgs': all_orgs,
         'title': org_type.replace('-', ' ').title(),
+        'title_link': reverse('create_lab'),
+        'title_link_text': '(add)'
     }
     return HttpResponse(template.render(**data))
 

@@ -46,14 +46,14 @@ TITLE_CHOICES = (
 # Create your models here.
 class Organization(models.Model):
     pi = models.ForeignKey(User, related_name = 'managed_organizations')
-    name = models.CharField(max_length = 200, blank=True, help_text='help')
+    name = models.CharField(max_length = 200, blank=True)
     description = models.TextField()
     url = models.URLField()
     org_type = models.SmallIntegerField(choices=ORG_TYPE_CHOICES)
 
     def save(self):
-        if self.org_type == ACADEMIC and self.name is None:
-            self.org_type = '%s Lab' % self.pi.username
+        if self.org_type == ACADEMIC and self.name == '':
+            self.name = '%s Lab' % self.pi.username
         super(Organization, self).save()
 
     def get_absolute_url(self):
