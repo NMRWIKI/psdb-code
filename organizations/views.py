@@ -4,6 +4,7 @@ from django.db.models import Q
 from django import http
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from jinja2 import Environment, PackageLoader
@@ -37,6 +38,7 @@ def org_main(request):
             )
         )
 
+@login_required
 @csrf_exempt
 def create_lab(request):
     org_type = request.GET.get('org_type', '')
@@ -45,17 +47,22 @@ def create_lab(request):
     extra = ''
     title = 'Organization Creation'
     if request.method == 'POST':
-        form = forms.LabAccountForm(request.POST)
+        form = forms.OrganizationForm(request.POST)
         if form.is_valid():
             form.save()
             extra = "Thanks!"
     else:
-        form = forms.LabAccountForm(initial = {'org_type': org_type_id})
+        form = forms.OrganizationForm(initial = {'org_type': org_type_id})
 
-    data = {'the_form': form, 'message': extra, 'title': title}
+    data = {'request': request, 
+            'the_form': form, 
+            'message': extra, 
+            'title': title
+            }
     template = ENV.get_template('create_lab.html')
     return http.HttpResponse(template.render(**data))
 
+@login_required
 @csrf_exempt
 def create_appointment(request):
     user = request.user
@@ -72,6 +79,7 @@ def create_appointment(request):
         form = forms.AppointmentForm()
 
     data = {
+            'request': request,
             'the_form': form, 
             'title': title, 
             }
@@ -108,13 +116,14 @@ def org_page(request, id=None, slug=None):
         Q(to_date__gt = now)
     )
     former_members = org_members.exclude(
-        Q(to_date = None)
-        | Q(to_date__gt = now)
+        Q(to_date = None)|
+        Q(to_date__gt = now)
     )
     data = {
         'request': request,
         'title': org.name,
         'organization': org,
+        'org_members': org_members,
         'current_appointments': current_members,
         'former_appointments': former_members,
         'add_link': add_link,

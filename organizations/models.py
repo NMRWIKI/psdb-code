@@ -59,6 +59,9 @@ class Organization(models.Model):
     def __unicode__(self):
         return self.name
 
+    def has_member(self, user):
+        cnt = self.appointments.filter(user = user).count()
+        return cnt > 0
 
 class Appointment(models.Model):
     user = models.ForeignKey(User, related_name = 'appointments')

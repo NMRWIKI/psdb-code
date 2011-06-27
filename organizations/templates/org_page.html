@@ -10,7 +10,13 @@
 <h2>Members</h2>
 
 {% if request.user.is_authenticated() %}
-<a href="{{ add_link }}/?org={{organization.id}}">This is (was) my lab</a>
+<a href="{{ add_link }}/?org={{organization.id}}">
+{% if organization.has_member(request.user) %}
+    Add a new appointment 
+{% else %}
+    This is (was) my lab
+{% endif %}
+</a>
 {% endif %}
 
 {% if current_appointments %}

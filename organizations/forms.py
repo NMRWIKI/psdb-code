@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from organizations import models
 
-class LabAccountForm(ModelForm):
+class OrganizationForm(ModelForm):
     class Meta:
         model = models.Organization
         fields = ('name', 'org_type', 'description', 'url', )
