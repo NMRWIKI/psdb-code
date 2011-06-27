@@ -11,26 +11,6 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from organizations import models 
 
-class ModelTests(TestCase):
-    def test_create_academic_lab_auto_name(self):
-        pi = User.objects.create_user('john',
-                                  'lennon@thebeatles.com',
-                                  'johnpassword'
-                              )
-        description = 'this is a yellow submarine'
-        url = 'www.cnn.com'
-        org_type = 0
-
-        org = models.Organization(
-                        pi = pi,
-                        description = description,
-                        url = url,
-                        org_type = org_type
-                    )
-        org.save()
-        self.assertEquals('%s Lab' % pi.username, org.name)
-
-
 class UrlTests(TestCase):
 
     def setUp(self):
@@ -49,7 +29,7 @@ class UrlTests(TestCase):
         self.assertEquals(response.status_code, 200)
 
     def test_org_creation_get(self):
-        response = self.client.post(reverse('create_lab'))
+        response = self.client.get(reverse('create_lab'))
         self.assertEquals(response.status_code, 200)
 
 class LoggedInUrlTests(UrlTests):

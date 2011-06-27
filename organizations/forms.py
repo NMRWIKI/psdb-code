@@ -4,7 +4,7 @@ from organizations import models
 class LabAccountForm(ModelForm):
     class Meta:
         model = models.Organization
-        fields = ('name', 'pi', 'org_type', 'description', 'url', )
+        fields = ('name', 'org_type', 'description', 'url', )
 
 class AppointmentForm(ModelForm):
     class Meta:

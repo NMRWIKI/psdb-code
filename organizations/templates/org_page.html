@@ -9,17 +9,15 @@
 
 <h2>Members</h2>
 
-Founder: {{ organization.pi }} </br> 
+{% if request.user.is_authenticated() %}
 <a href="{{ add_link }}/?org={{organization.id}}">This is (was) my lab</a>
+{% endif %}
 
 {% if current_appointments %}
     <h3>Current</h3>
     <ul>
         {% for appointment in current_appointments %}
         <li><a href="blankappointmentpage">{{ appointment.user }}</a>
-        {% if appointment.user == organization.pi %}
-         - <b> Founder</b>
-        {% endif %}
         </li>
         {% endfor %}
    </ul>
@@ -31,9 +29,6 @@ Founder: {{ organization.pi }} </br>
         {% for appointment in former_appointments %}
         <li><a href="blankappointmentpage">{{ appointment.user }}</a>
         - left {{ appointment.to_date }}
-        {% if appointment.user == organization.pi %}
-        - <b> Founder</b>
-        {% endif %}
         </li>
         {% endfor %}
     </ul>

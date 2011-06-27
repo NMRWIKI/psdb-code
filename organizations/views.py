@@ -12,6 +12,8 @@ ENV = Environment(loader=PackageLoader('organizations', 'templates'))
 
 def org_main(request):
     org_type_info = list()
+    title_link = reverse('create_lab')
+    title_link_text = '(add)'
     for (slug, org_type_id) in models.ORG_TYPE_URL2ID:
         cnt = models.Organization.objects.filter(
                         org_type = org_type_id
@@ -27,16 +29,19 @@ def org_main(request):
     template = ENV.get_template('org_main.html')
     return http.HttpResponse(
             template.render(
+                request = request,
                 org_type_info = org_type_info,
                 title = 'Organizations',
-                title_link = reverse('create_lab'),
-                title_link_text = '(add)'
+                title_link = title_link,
+                title_link_text = title_link_text
             )
         )
 
 @csrf_exempt
 def create_lab(request):
-   # org_type = request.GET.get('org_type')
+    org_type = request.GET.get('org_type', '')
+    type_map = dict(models.ORG_TYPE_URL2ID)
+    org_type_id = type_map.get(str(org_type), None)
     extra = ''
     title = 'Organization Creation'
     if request.method == 'POST':
@@ -45,7 +50,7 @@ def create_lab(request):
             form.save()
             extra = "Thanks!"
     else:
-        form = forms.LabAccountForm()
+        form = forms.LabAccountForm(initial = {'org_type': org_type_id})
 
     data = {'the_form': form, 'message': extra, 'title': title}
     template = ENV.get_template('create_lab.html')
@@ -80,13 +85,15 @@ def org_list(request, org_type=None):
         my_orgs = orgs.filter(appointments__user=request.user)
         all_orgs = orgs.exclude(appointments__user = request.user)
     else:
+        my_orgs = None
         all_orgs = orgs
     template = ENV.get_template('org_list.html')
     data = {
+        'request': request,
         'my_orgs': my_orgs,
         'all_orgs': all_orgs,
         'title': org_type.replace('-', ' ').title(),
-        'title_link': reverse('create_lab'),
+        'title_link': reverse('create_lab') + '?org_type=' + org_type,
         'title_link_text': '(add)'
     }
     return http.HttpResponse(template.render(**data))
@@ -105,6 +112,7 @@ def org_page(request, id=None, slug=None):
         | Q(to_date__gt = now)
     )
     data = {
+        'request': request,
         'title': org.name,
         'organization': org,
         'current_appointments': current_members,
