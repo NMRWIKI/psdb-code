@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, include, url
+from coffin.conf.urls.defaults import patterns, include, url
 from organizations import models
 
 # Uncomment the next two lines to enable the admin:
@@ -30,6 +30,11 @@ urlpatterns = patterns('',
         r'^create_appointment', 
         'organizations.views.create_appointment',
         name='create_appointment'
+    ),
+    url(
+        r'^save_org_description',
+        'organizations.views.save_org_description',
+        name='save_org_description'
     ),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

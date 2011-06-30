@@ -7,8 +7,10 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.utils import simplejson
 from jinja2 import Environment, PackageLoader
 from organizations import forms, models
+from coffin.shortcuts import render_to_response
 ENV = Environment(loader=PackageLoader('organizations', 'templates'))
 
 def org_main(request):
@@ -27,16 +29,14 @@ def org_main(request):
             'count': cnt
         }
         org_type_info.append(info)
-    template = ENV.get_template('org_main.html')
-    return http.HttpResponse(
-            template.render(
-                request = request,
-                org_type_info = org_type_info,
-                title = 'Organizations',
-                title_link = title_link,
-                title_link_text = title_link_text
-            )
-        )
+        data = {
+            'request': request,
+            'org_type_info': org_type_info,
+            'title': 'Organizations',
+            'title_link': title_link,
+            'title_link_text': title_link_text
+            }
+    return render_to_response('org_main.html', data)
 
 @login_required
 @csrf_exempt
@@ -44,23 +44,21 @@ def create_lab(request):
     org_type = request.GET.get('org_type', '')
     type_map = dict(models.ORG_TYPE_URL2ID)
     org_type_id = type_map.get(str(org_type), None)
-    extra = ''
     title = 'Organization Creation'
     if request.method == 'POST':
         form = forms.OrganizationForm(request.POST)
         if form.is_valid():
             form.save()
-            extra = "Thanks!"
+            organization = form.instance
+            return http.HttpResponseRedirect(organization.get_absolute_url())
     else:
         form = forms.OrganizationForm(initial = {'org_type': org_type_id})
 
     data = {'request': request, 
             'the_form': form, 
-            'message': extra, 
             'title': title
             }
-    template = ENV.get_template('create_lab.html')
-    return http.HttpResponse(template.render(**data))
+    return render_to_response('create_lab.html', data) 
 
 @login_required
 @csrf_exempt
@@ -83,8 +81,7 @@ def create_appointment(request):
             'the_form': form, 
             'title': title, 
             }
-    template = ENV.get_template('create_appointment.html')
-    return http.HttpResponse(template.render(**data))
+    return render_to_response('create_appointment.html', data) 
 
 def org_list(request, org_type=None):
     org_type_id = dict(models.ORG_TYPE_URL2ID)[org_type]
@@ -104,7 +101,7 @@ def org_list(request, org_type=None):
         'title_link': reverse('create_lab') + '?org_type=' + org_type,
         'title_link_text': '(add)'
     }
-    return http.HttpResponse(template.render(**data))
+    return render_to_response('org_list.html', data)
 
 def org_page(request, id=None, slug=None):
     add_link = reverse('create_appointment')
@@ -128,5 +125,17 @@ def org_page(request, id=None, slug=None):
         'former_appointments': former_members,
         'add_link': add_link,
     }
-    template = ENV.get_template('org_page.html')
-    return http.HttpResponse(template.render(**data))
+    return render_to_response('org_page.html', data)
+
+@csrf_exempt
+def save_org_description(request):
+    if request.user.is_anonymous():
+        raise Http404
+    text = request.POST['text']
+    org_id = request.POST['id']
+    org = models.Organization.objects.get(id = org_id)
+    org.description = text
+    org.save()
+    #save the descr
+    data = simplejson.dumps({'text': text, 'id': org_id })
+    return http.HttpResponse(data, mimetype="application/json")

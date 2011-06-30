@@ -319,6 +319,11 @@ var EditableString = function(){
      * 'DISPLAY' is default
      */
     this._state = 'DISPLAY';
+    /**
+     * @private
+     * @type {boolean}
+     */
+    this._is_multiline = false;
 };
 inherits(EditableString, Widget);
 
@@ -334,6 +339,13 @@ EditableString.prototype.setEditable = function(is_editable){
  */
 EditableString.prototype.isEditable = function(){
     return this._is_editable;
+};
+
+/**
+ * @param {boolean} is_multiline
+ */
+EditableString.prototype.setMultiline = function(is_multiline){
+    this._is_multiline = is_multiline;
 };
 
 /**
@@ -456,7 +468,7 @@ EditableString.prototype.createDom = function(){
 
     this._display_block = this.makeElement('div');
     this._element.append(this._display_block);
-    this._text_element = this.makeElement('span');
+    this._text_element = this.makeElement('div');
     this._display_block.append(this._text_element);
     //set the value of text
     this._text_element.html(this._text);
@@ -466,9 +478,16 @@ EditableString.prototype.createDom = function(){
     this._edit_block = this.makeElement('div');
     this._element.append(this._edit_block);
 
-    this._input_box = this.makeElement('input');
-    this._input_box.attr('type', 'text');
+    if (this._is_multiline === false){
+        this._edit_block.css('display', 'inline');
+        this._display_block.css('display', 'inline');
+        this._input_box = this.makeElement('input');
+        this._input_box.attr('type', 'text');
+    } else {
+        this._input_box = this.makeElement('textarea');
+    }
     this._edit_block.append(this._input_box);
+
 
     var edit_link = new EditLink();
     edit_link.setHandler(
@@ -492,5 +511,52 @@ EditableString.prototype.createDom = function(){
     this.setState(this.getState());
 };
 
-var es = new EditableString();
-es.decorate($('div.descr'));
+var Description = function(){
+    EditableString.call(this);
+    /**
+     * @type {boolean}
+     */
+    this._is_multiline = true;
+    /**
+     * @type {?number}
+     */
+     this._id = null;
+}
+inherits(Description, EditableString);
+
+Description.prototype.saveTextToDb = function(on_save){
+    var me = this;
+    var id = me._id;
+    $.ajax({
+        type: 'POST',
+        url: nmrwiki['urls']['save_org_description'],
+        data: {text: me.getInputBoxText(), id: id},
+        dataType: 'json',
+        cache: false,
+        success: on_save
+    });
+};
+
+Description.prototype.getSaveEditHandler = function(){
+    var me = this;
+    return function(){
+        var on_finish = function(data){
+            me.setText(data['text']);
+            me.setState('DISPLAY');
+        };
+        me.saveTextToDb(on_finish);
+    }; 
+};
+
+Description.prototype.decorate = function(element){
+    Description.superClass_.decorate.call(this, element);
+    this._id = element.attr('class').split('-').pop();
+    var edit_block = this.getEditBlock();
+    var button = this.makeElement('button');
+    button.val("Save");
+    setupButtonEventHandlers(button, this.getSaveEditHandler());
+    edit_block.append(this.button);
+};
+
+var es = new Description();
+es.decorate($('[class^="org-descr"]'));
