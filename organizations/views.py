@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from jinja2 import Environment, PackageLoader
 from organizations import forms, models
+from wikimarkup import parse
 from coffin.shortcuts import render_to_response
 ENV = Environment(loader=PackageLoader('organizations', 'templates'))
 
@@ -66,7 +67,7 @@ def create_appointment(request):
     user = request.user
     org_id = request.GET.get('org', '')
     organization = models.Organization.objects.get(id = org_id)
-    title = 'Appointment Creation for %s' % organization.name
+    title = 'Have you worked at %s?' % organization.name
     if request.method == 'POST':
         appointment = models.Appointment(user=user, organization=organization)
         form = forms.AppointmentForm(request.POST, instance=appointment)
@@ -137,5 +138,13 @@ def save_org_description(request):
     org.description = text
     org.save()
     #save the descr
-    data = simplejson.dumps({'text': text, 'id': org_id })
+    data = simplejson.dumps({'text': parse(text), 'id': org_id })
+    return http.HttpResponse(data, mimetype="application/json")
+
+def get_org_description(request):
+    if request.user.is_anonymous():
+        raise Http404
+    org_id = request.GET['id']
+    org = models.Organization.objects.get(id = org_id)
+    data = simplejson.dumps({'text': org.description})
     return http.HttpResponse(data, mimetype="application/json")

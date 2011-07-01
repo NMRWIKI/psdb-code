@@ -505,9 +505,11 @@ EditableString.prototype.createDom = function(){
 
     this._text_element.click(this.getTextClickHandler());
 
-    this._input_box.keydown(
-        makeKeyHandler(13, this.getSaveEditHandler())
-    );
+    if (this._is_multiline === false){
+        this._input_box.keydown(
+            makeKeyHandler(13, this.getSaveEditHandler())
+        );
+    }
     this.setState(this.getState());
 };
 
@@ -529,7 +531,7 @@ Description.prototype.saveTextToDb = function(on_save){
     var id = me._id;
     $.ajax({
         type: 'POST',
-        url: nmrwiki['urls']['save_org_description'],
+        url: orgs['urls']['save_org_description'],
         data: {text: me.getInputBoxText(), id: id},
         dataType: 'json',
         cache: false,
@@ -548,15 +550,50 @@ Description.prototype.getSaveEditHandler = function(){
     }; 
 };
 
+Description.prototype.getCancelEditHandler = function(){
+    var me = this;
+    return function(){
+        me.setState('DISPLAY');
+    };
+};
+
+Description.prototype.getObjectId = function(){
+    return this._id;
+};
+
+Description.prototype.getStartEditHandler = function(){
+    var me = this;
+    var on_load = function(data){
+        me.setState('EDIT');
+        me._input_box.val(data['text']);
+        me._input_box.focus();
+    };
+    return function(){
+        $.ajax({
+            url: orgs['urls']['get_org_description'],
+            data: {id: me.getObjectId()},
+            dataType: 'json',
+            type: 'GET',
+            success: on_load
+        });
+    }
+};
+
+
 Description.prototype.decorate = function(element){
     Description.superClass_.decorate.call(this, element);
     this._id = element.attr('class').split('-').pop();
     var edit_block = this.getEditBlock();
     var button = this.makeElement('button');
-    button.val("Save");
+    button.html("Save");
     setupButtonEventHandlers(button, this.getSaveEditHandler());
-    edit_block.append(this.button);
+    edit_block.append(button);
+    var button2 = this.makeElement('button');
+    button2.html("Back");
+    setupButtonEventHandlers(button2, this.getCancelEditHandler());
+    edit_block.append(button2);
 };
 
-var es = new Description();
-es.decorate($('[class^="org-descr"]'));
+if (isMember){
+var descrip = new Description();
+descrip.decorate($('[class^="org-descr"]'));}

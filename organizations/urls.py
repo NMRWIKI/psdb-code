@@ -36,6 +36,11 @@ urlpatterns = patterns('',
         'organizations.views.save_org_description',
         name='save_org_description'
     ),
+    url(
+        r'^get_org_description',
+        'organizations.views.get_org_description',
+        name='get_org_description'
+    ),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

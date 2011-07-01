@@ -3,11 +3,11 @@
 
 <a href="{{ organization.url }}">Site for {{ title }}</a>
 
-<h2>Description
-<a href="">(edit, broken)</a>
-</h2>
+<h2>Description</h2>
 
-<div class="org-descr-{{organization.id}}">{{ organization.description }}</div>
+<div class="org-descr-{{organization.id}}">
+    {{ organization.description|mediawikiparse|safe }}
+</div>
 
 <h2>Members</h2>
 
@@ -40,6 +40,22 @@
         </li>
         {% endfor %}
     </ul>
+{% endif %}
+
+{% endblock %}
+
+{% block endjs %}
+
+{% if request.user.is_authenticated() %}
+{% if organization.has_member(request.user) %}
+    <script type="text/javascript">
+    var isMember = true;
+    </script>
+{% endif %}
+{% else %}
+    <script type="text/javascript">
+    var isMember = false;
+    </script>
 {% endif %}
 
 {% endblock %}
