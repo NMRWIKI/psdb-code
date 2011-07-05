@@ -134,8 +134,9 @@ def save_org_description(request):
         raise Http404
     text = request.POST['text']
     org_id = request.POST['id']
+    field = request.POST['field']
     org = models.Organization.objects.get(id = org_id)
-    org.description = text
+    setattr(org, field, text)
     org.save()
     #save the descr
     data = simplejson.dumps({'text': parse(text), 'id': org_id })
@@ -145,6 +146,7 @@ def get_org_description(request):
     if request.user.is_anonymous():
         raise Http404
     org_id = request.GET['id']
+    field = request.GET['field']
     org = models.Organization.objects.get(id = org_id)
-    data = simplejson.dumps({'text': org.description})
+    data = simplejson.dumps({'text': getattr(org, field)})
     return http.HttpResponse(data, mimetype="application/json")

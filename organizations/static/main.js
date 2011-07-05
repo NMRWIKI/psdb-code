@@ -518,21 +518,47 @@ var Description = function(){
     /**
      * @type {boolean}
      */
-    this._is_multiline = true;
+    this._is_multiline = false;
     /**
      * @type {?number}
      */
-     this._id = null;
+    this._id = null;
+    /**
+     * @type {string}
+     */
+    this._field = null;
+    /**
+     * @type {string}
+     */
+    this._model = null;
 }
 inherits(Description, EditableString);
+
+Description.prototype.getObjectId = function(){
+    return this._id;
+};
+
+Description.prototype.getObjectField = function(){
+    return this._field;
+};
+
+Description.prototype.setObjectId = function(id){
+    this._id = id;
+};
+
+Description.prototype.setObjectField = function(model, field){
+    this._model = model;
+    this._field = field;
+};
 
 Description.prototype.saveTextToDb = function(on_save){
     var me = this;
     var id = me._id;
+    var field = me._field;
     $.ajax({
         type: 'POST',
         url: orgs['urls']['save_org_description'],
-        data: {text: me.getInputBoxText(), id: id},
+        data: {text: me.getInputBoxText(), id: id, field: field},
         dataType: 'json',
         cache: false,
         success: on_save
@@ -557,12 +583,9 @@ Description.prototype.getCancelEditHandler = function(){
     };
 };
 
-Description.prototype.getObjectId = function(){
-    return this._id;
-};
-
 Description.prototype.getStartEditHandler = function(){
     var me = this;
+    var field = this._field;
     var on_load = function(data){
         me.setState('EDIT');
         me._input_box.val(data['text']);
@@ -571,7 +594,7 @@ Description.prototype.getStartEditHandler = function(){
     return function(){
         $.ajax({
             url: orgs['urls']['get_org_description'],
-            data: {id: me.getObjectId()},
+            data: {id: me.getObjectId(), field: field},
             dataType: 'json',
             type: 'GET',
             success: on_load
@@ -582,18 +605,14 @@ Description.prototype.getStartEditHandler = function(){
 
 Description.prototype.decorate = function(element){
     Description.superClass_.decorate.call(this, element);
-    this._id = element.attr('class').split('-').pop();
     var edit_block = this.getEditBlock();
     var button = this.makeElement('button');
     button.html("Save");
     setupButtonEventHandlers(button, this.getSaveEditHandler());
     edit_block.append(button);
     var button2 = this.makeElement('button');
-    button2.html("Back");
+    button2.html("Cancel");
     setupButtonEventHandlers(button2, this.getCancelEditHandler());
     edit_block.append(button2);
 };
 
-if (isMember){
-var descrip = new Description();
-descrip.decorate($('[class^="org-descr"]'));}

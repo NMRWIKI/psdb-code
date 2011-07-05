@@ -70,7 +70,6 @@ var wgAjaxWatch = {"watchMsg": "Watch", "unwatchMsg": "Unwatch", "watchingMsg": 
 		<div id="column-content">
 	<div id="content">
 		<a name="top" id="top"></a>
-
 				<h1 class="firstHeading">{{title}}
                     {% if request.user.is_authenticated() and title_link %}
                     <a href="{{ title_link }}">{{title_link_text}}</a>
@@ -198,9 +197,9 @@ Retrieved from "<a href="http://nmrwiki.org/wiki/index.php?title=Requirements_fo
         orgs['urls']['get_org_description'] = '{% url get_org_description %}';
         orgs['data'] = {};
         </script>
+        <script type="text/javascript" src="/static/main.js"></script>
         {% block endjs %}
         {% endblock %}
-        <script type="text/javascript" src="/static/main.js"></script>
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));

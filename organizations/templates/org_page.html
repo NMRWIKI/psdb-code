@@ -58,4 +58,19 @@
     </script>
 {% endif %}
 
+<script type="text/javascript">
+if (isMember){
+var descrip = new Description();
+descrip.setMultiline(true);
+descrip.setObjectId({{organization.id}});
+descrip.setObjectField('Organization', 'description');
+descrip.decorate($('[class^="org-descr"]'));
+
+var descrip2 = new Description();
+descrip2.setObjectId({{organization.id}});
+descrip2.setObjectField('Organization', 'name');
+descrip2.decorate($('[class^="firstHeading"]'));
+}
+</script>
+
 {% endblock %}
