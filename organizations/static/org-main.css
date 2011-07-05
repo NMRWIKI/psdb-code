@@ -1,0 +1,9 @@
+a.edit {
+    padding-left:.3em;
+}
+a.edit:before {
+    content: "(";
+}
+a.edit:after {
+    content: ")";
+}

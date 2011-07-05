@@ -481,6 +481,7 @@ EditableString.prototype.createDom = function(){
     if (this._is_multiline === false){
         this._edit_block.css('display', 'inline');
         this._display_block.css('display', 'inline');
+        this._text_element.css('display', 'inline');
         this._input_box = this.makeElement('input');
         this._input_box.attr('type', 'text');
     } else {
@@ -531,6 +532,10 @@ var Description = function(){
      * @type {string}
      */
     this._model = null;
+    /**
+     * @type {string}
+     */
+    this._data_format = 'text';
 }
 inherits(Description, EditableString);
 
@@ -551,14 +556,22 @@ Description.prototype.setObjectField = function(model, field){
     this._field = field;
 };
 
+Description.prototype.setDataFormat = function(data_format){
+    this._data_format = data_format;
+};
+
 Description.prototype.saveTextToDb = function(on_save){
     var me = this;
     var id = me._id;
     var field = me._field;
+    var data_format = me._data_format;
     $.ajax({
         type: 'POST',
         url: orgs['urls']['save_org_description'],
-        data: {text: me.getInputBoxText(), id: id, field: field},
+        data: {text: me.getInputBoxText(), 
+                id: id, 
+                field: field, 
+                data_format: data_format},
         dataType: 'json',
         cache: false,
         success: on_save

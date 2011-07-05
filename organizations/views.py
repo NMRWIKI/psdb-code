@@ -135,11 +135,15 @@ def save_org_description(request):
     text = request.POST['text']
     org_id = request.POST['id']
     field = request.POST['field']
+    data_format = request.POST['data_format']
     org = models.Organization.objects.get(id = org_id)
     setattr(org, field, text)
     org.save()
     #save the descr
-    data = simplejson.dumps({'text': parse(text), 'id': org_id })
+    if data_format == 'mediawiki':
+        data = simplejson.dumps({'text': parse(text), 'id': org_id })
+    else:
+        data = simplejson.dumps({'text': text, 'id': org_id })
     return http.HttpResponse(data, mimetype="application/json")
 
 def get_org_description(request):

@@ -58,6 +58,7 @@ var wgAjaxWatch = {"watchMsg": "Watch", "unwatchMsg": "Unwatch", "watchingMsg": 
 @import "/wiki/index.php?title=MediaWiki:Monobook.css&usemsgcache=yes&action=raw&ctype=text/css&smaxage=18000";
 @import "/wiki/index.php?title=-&action=raw&gen=css&maxage=18000&smaxage=0";
 /*]]>*/</style>
+        <link rel="stylesheet" type="text/css" href="/static/org-main.css" />
 		<!-- Head Scripts -->
 				<script type="text/javascript" src="/wiki/skins/common/ajax.js?116"></script>
 		<script type="text/javascript" src="/wiki/skins/common/ajaxwatch.js?116"></script>
@@ -70,10 +71,10 @@ var wgAjaxWatch = {"watchMsg": "Watch", "unwatchMsg": "Unwatch", "watchingMsg": 
 		<div id="column-content">
 	<div id="content">
 		<a name="top" id="top"></a>
-				<h1 class="firstHeading">{{title}}
-                    {% if request.user.is_authenticated() and title_link %}
+				<h1 class="firstHeading">{{title|trim}}
+                    {%- if request.user.is_authenticated() and title_link %}
                     <a href="{{ title_link }}">{{title_link_text}}</a>
-                    {% endif %}
+                    {% endif -%}
                 </h1>
 		<div id="bodyContent">
 			<h3 id="siteSub">From NMR Wiki</h3>
