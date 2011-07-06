@@ -6,11 +6,16 @@ from psdbgit import models
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', 'organizations.views.org_main', name='org_main'),
+    url(r'^$', 'pulse_sequences.views.org_main', name='ps_main'),
     url(
-        r'^(?P<id>\d+)/(?P<slug>[a-z0-9\-]+)/$',
-        'psdbgit.views.org_page',
-        name='org_page'
+        r'^(?P<slug>[a-z0-9\-]+)/$',
+        'pulse_sequences.views.database_page',
+        name='database_page'
+    ),
+    url(
+        r'^(?P<slug>[a-z0-9\-]+)-(?P<device_type>[a-z])(?P<id>\d+)/$',
+        'pulse_sequences.views.repo_page',
+        name='repo_page'
     ),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
