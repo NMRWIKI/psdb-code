@@ -88,7 +88,7 @@ def org_list(request, org_type=None):
     org_type_id = dict(models.ORG_TYPE_URL2ID)[org_type]
     orgs = models.Organization.objects.filter(org_type = org_type_id)
     if request.user.is_authenticated():
-        my_orgs = orgs.filter(appointments__user=request.user)
+        my_orgs = orgs.filter(appointments__user = request.user)
         all_orgs = orgs.exclude(appointments__user = request.user)
     else:
         my_orgs = None

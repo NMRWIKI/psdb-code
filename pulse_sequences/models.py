@@ -35,18 +35,21 @@ class Repo(models.Model):
                     'device_type': self.device_type,}
                 )
 
-#class Pulse_Sequence(models.Model):
+class Pulse_Sequence(models.Model):
+    repo = models.ForeignKey(Repo)
+    id_number = models.SmallIntegerField()
 
 class File(models.Model):
     path = models.CharField(max_length=255)
     description = models.TextField()
-    commit = models.ForeignKey()
+    commit = models.ForeignKey('Commit')
 
 class Commit(models.Model):
     timestamp = models.DateTimeField()
-    githash = models.CharField(64) 
+    githash = models.CharField(max_length=64) 
     user = models.ForeignKey(User)
-    files = models.ManyToManyField(File)
+    pulse_sequence = models.ForeignKey(Pulse_Sequence)
+    files = models.ManyToManyField(File, related_name='ps')
     id_number = models.SmallIntegerField()
 # need to make manual directory parameter
 #    manual = models.FileField()

@@ -127,6 +127,7 @@ INSTALLED_APPS = (
 	'south',
     'psdb',
     'organizations',
+    'pulse_sequences',
 )
 
 # A sample logging configuration. The only tangible logging

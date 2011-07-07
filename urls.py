@@ -7,6 +7,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'psdb.views.home', name='home'),
     url(r'^organizations/', include('organizations.urls')),
+    url(r'^pulse_sequences/', include('pulse_sequences.urls')),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
