@@ -32,8 +32,8 @@ def ps_list(request, ps_type=None):
     }
     return render_to_response('ps_list.html', data)
 
-def ps_page(request):
+#def ps_page(request):
 
-def ps_creation(request):
+#def ps_creation(request):
 
-def ps_edit(request):
+#def ps_edit(request):
